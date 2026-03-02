@@ -34,6 +34,7 @@ export default function App() {
   const [fatherHeight, setFatherHeight] = useState<number | ''>('');
   const [motherHeight, setMotherHeight] = useState<number | ''>('');
   const [dateError, setDateError] = useState<string>('');
+  const [measurementError, setMeasurementError] = useState<string>('');
 
   const dobDRef = useRef<HTMLInputElement>(null);
   const dobMRef = useRef<HTMLInputElement>(null);
@@ -130,11 +131,24 @@ export default function App() {
     }
   }, [dobD, dobM, dobY, doeD, doeM, doeY, ageMode]);
 
+  useEffect(() => {
+    if (height !== '' && (height < 50 || height > 200)) {
+      setMeasurementError('Chiều cao phải từ 50cm đến 200cm');
+    } else if (weight !== '' && (weight < 3 || weight > 200)) {
+      setMeasurementError('Cân nặng phải từ 3kg đến 200kg');
+    } else if (headCircumference !== '' && (headCircumference < 30 || headCircumference > 80)) {
+      setMeasurementError('Vòng đầu phải từ 30cm đến 80cm');
+    } else {
+      setMeasurementError('');
+    }
+  }, [height, weight, headCircumference]);
+
   const ageInMonths = years * 12 + months;
 
   const calculateResults = () => {
     if (ageInMonths < 0 || ageInMonths > 228) return null; // WHO data up to 19 years
     if (!height || !weight) return null;
+    if (measurementError) return null;
 
     const isBoy = gender === 'boy';
 
@@ -283,6 +297,8 @@ export default function App() {
                       <input
                         ref={dobDRef}
                         type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         placeholder="DD"
                         value={dobD}
                         onChange={(e) => handleDateChange(e.target.value, setDobD, 2, dobMRef)}
@@ -291,6 +307,8 @@ export default function App() {
                       <input
                         ref={dobMRef}
                         type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         placeholder="MM"
                         value={dobM}
                         onChange={(e) => handleDateChange(e.target.value, setDobM, 2, dobYRef)}
@@ -299,6 +317,8 @@ export default function App() {
                       <input
                         ref={dobYRef}
                         type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         placeholder="YYYY"
                         value={dobY}
                         onChange={(e) => handleDateChange(e.target.value, setDobY, 4, doeDRef)}
@@ -312,6 +332,8 @@ export default function App() {
                       <input
                         ref={doeDRef}
                         type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         placeholder="DD"
                         value={doeD}
                         onChange={(e) => handleDateChange(e.target.value, setDoeD, 2, doeMRef)}
@@ -320,6 +342,8 @@ export default function App() {
                       <input
                         ref={doeMRef}
                         type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         placeholder="MM"
                         value={doeM}
                         onChange={(e) => handleDateChange(e.target.value, setDoeM, 2, doeYRef)}
@@ -328,6 +352,8 @@ export default function App() {
                       <input
                         ref={doeYRef}
                         type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         placeholder="YYYY"
                         value={doeY}
                         onChange={(e) => handleDateChange(e.target.value, setDoeY, 4, null)}
@@ -351,6 +377,8 @@ export default function App() {
                   <div className="relative">
                     <input
                       type="number"
+                      inputMode="decimal"
+                      pattern="[0-9]*"
                       min="0"
                       max="19"
                       value={years}
@@ -363,6 +391,8 @@ export default function App() {
                   <div className="relative">
                     <input
                       type="number"
+                      inputMode="decimal"
+                      pattern="[0-9]*"
                       min="0"
                       max="11"
                       value={months}
@@ -386,6 +416,8 @@ export default function App() {
                   </div>
                   <input
                     type="number"
+                    inputMode="decimal"
+                    pattern="[0-9]*"
                     value={height}
                     onChange={(e) => setHeight(e.target.value ? Number(e.target.value) : '')}
                     className="w-full pl-10 pr-12 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
@@ -403,6 +435,8 @@ export default function App() {
                   </div>
                   <input
                     type="number"
+                    inputMode="decimal"
+                    pattern="[0-9]*"
                     value={weight}
                     onChange={(e) => setWeight(e.target.value ? Number(e.target.value) : '')}
                     className="w-full pl-10 pr-12 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
@@ -420,6 +454,8 @@ export default function App() {
                   </div>
                   <input
                     type="number"
+                    inputMode="decimal"
+                    pattern="[0-9]*"
                     value={headCircumference}
                     onChange={(e) => setHeadCircumference(e.target.value ? Number(e.target.value) : '')}
                     className="w-full pl-10 pr-12 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
@@ -428,6 +464,12 @@ export default function App() {
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400">cm</span>
                 </div>
               </div>
+              
+              {measurementError && (
+                <div className="bg-red-50 text-red-600 text-sm py-2 px-3 rounded-lg border border-red-100">
+                  {measurementError}
+                </div>
+              )}
             </div>
 
             {/* Parents */}
@@ -442,6 +484,8 @@ export default function App() {
                   <div className="relative">
                     <input
                       type="number"
+                      inputMode="decimal"
+                      pattern="[0-9]*"
                       value={fatherHeight}
                       onChange={(e) => setFatherHeight(e.target.value ? Number(e.target.value) : '')}
                       className="w-full pl-3 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
@@ -455,6 +499,8 @@ export default function App() {
                   <div className="relative">
                     <input
                       type="number"
+                      inputMode="decimal"
+                      pattern="[0-9]*"
                       value={motherHeight}
                       onChange={(e) => setMotherHeight(e.target.value ? Number(e.target.value) : '')}
                       className="w-full pl-3 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
@@ -533,8 +579,7 @@ export default function App() {
                             Hệ thống ghi nhận bất thường (phát hiện chỉ số nhân trắc bất thường hoặc có dấu hiệu lâm sàng nguy cơ).
                           </p>
                           <div className="mt-2 inline-block bg-red-100 text-red-800 text-sm font-medium px-3 py-1.5 rounded-lg border border-red-200">
-                            Cần hội chẩn Team Nội tiết - Tăng trưởng - Di truyền Nhi khoa (BS. Đỗ Tiến Sơn)<br/>
-                            <span className="font-bold text-red-900">Hotline: 098 414 4492</span>
+                            Cần hội chẩn Nhóm lâm sàng về Nội tiết - Tăng trưởng - Di truyền Nhi khoa (ThS.BS. Đỗ Tiến Sơn hỗ trợ oncall và trực tiếp)
                           </div>
                         </div>
                       </div>
@@ -575,7 +620,7 @@ export default function App() {
                   value={`${results.bmi.toFixed(1)}`}
                   zScore={results.bmiZ}
                   percentile={zScoreToPercentile(results.bmiZ)}
-                  evaluation={evaluateBMIZScore(results.bmiZ)}
+                  evaluation={evaluateBMIZScore(results.bmiZ, ageInMonths)}
                 />
 
                 {/* Head Circumference Result */}
@@ -649,7 +694,10 @@ export default function App() {
 
         {/* References */}
         <div className="mt-12 pt-6 border-t border-slate-200">
-          <h3 className="text-sm font-semibold text-slate-700 mb-3">Tài liệu tham khảo:</h3>
+          <h3 className="text-sm font-semibold text-slate-700 mb-3">Chú thích & Tài liệu tham khảo:</h3>
+          <ul className="list-disc list-inside text-xs text-slate-500 space-y-2 mb-4">
+            <li>Khoảng tham chiếu bình thường cho Chiều cao và Cân nặng được tính từ -1.5 SD đến +1.5 SD. Các trường hợp ngoài khoảng này cần được lưu ý và hội chẩn thêm.</li>
+          </ul>
           <ol className="list-decimal list-inside text-xs text-slate-500 space-y-2">
             <li>World Health Organization. <em>WHO Child Growth Standards: Length/height-for-age, weight-for-age, weight-for-length, weight-for-height and body mass index-for-age: Methods and development</em>. Geneva, Switzerland: World Health Organization; 2006.</li>
             <li>de Onis M, Onyango AW, Borghi E, Siyam A, Nishida C, Siekmann J. Development of a WHO growth reference for school-aged children and adolescents. <em>Bull World Health Organ</em>. 2007;85(9):660-667. doi:10.2471/blt.07.043497</li>
@@ -660,6 +708,9 @@ export default function App() {
         <div className="pt-8 pb-4 text-center mt-4">
           <p className="text-sm text-slate-500 font-medium">
             ThS.BS. Đỗ Tiến Sơn phát triển năm 2026 - Đang giai đoạn thử nghiệm
+          </p>
+          <p className="text-xs text-slate-400 mt-2">
+            Thông báo lỗi, góp ý: <a href="mailto:bs.dotienson@gmail.com" className="text-indigo-500 hover:underline">bs.dotienson@gmail.com</a>
           </p>
         </div>
 
@@ -673,7 +724,7 @@ function ResultCard({ title, value, zScore, percentile, evaluation }: {
   value: string; 
   zScore: number; 
   percentile?: number;
-  evaluation: { label: string, color: string, bg: string } 
+  evaluation: { label: string, color: string, bg: string, note?: string } 
 }) {
   return (
     <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 transition-all hover:shadow-md">
@@ -725,6 +776,11 @@ function ResultCard({ title, value, zScore, percentile, evaluation }: {
         <span>+2</span>
         <span>+3</span>
       </div>
+      {evaluation.note && (
+        <div className="mt-3 text-xs text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-100">
+          {evaluation.note}
+        </div>
+      )}
     </div>
   );
 }

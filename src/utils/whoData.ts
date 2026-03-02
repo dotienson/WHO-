@@ -53,25 +53,43 @@ export function zScoreToPercentile(z) {
 }
 
 export function evaluateHeightZScore(z) {
-  if (z < -3) return { label: 'Rất thấp còi', color: 'text-red-600', bg: 'bg-red-50' };
-  if (z < -2) return { label: 'Thấp còi', color: 'text-orange-600', bg: 'bg-orange-50' };
-  if (z <= 2) return { label: 'Bình thường', color: 'text-emerald-600', bg: 'bg-emerald-50' };
-  return { label: 'Rất cao', color: 'text-blue-600', bg: 'bg-blue-50' };
+  if (z >= -1.5 && z <= 1.5) return { label: 'Trong khoảng bình thường', color: 'text-emerald-600', bg: 'bg-emerald-50' };
+  return { label: 'Cần lưu ý và hội chẩn', color: 'text-orange-600', bg: 'bg-orange-50' };
 }
 
 export function evaluateWeightZScore(z) {
-  if (z < -3) return { label: 'Rất nhẹ cân', color: 'text-red-600', bg: 'bg-red-50' };
-  if (z < -2) return { label: 'Nhẹ cân', color: 'text-orange-600', bg: 'bg-orange-50' };
-  if (z <= 1) return { label: 'Bình thường', color: 'text-emerald-600', bg: 'bg-emerald-50' };
-  return { label: 'Nặng cân (Xem BMI)', color: 'text-blue-600', bg: 'bg-blue-50' };
+  if (z >= -1.5 && z <= 1.5) return { label: 'Trong khoảng bình thường', color: 'text-emerald-600', bg: 'bg-emerald-50' };
+  return { label: 'Cần lưu ý và hội chẩn', color: 'text-orange-600', bg: 'bg-orange-50' };
 }
 
-export function evaluateBMIZScore(z) {
-  if (z < -3) return { label: 'Rất gầy', color: 'text-red-600', bg: 'bg-red-50' };
-  if (z < -2) return { label: 'Gầy', color: 'text-orange-600', bg: 'bg-orange-50' };
-  if (z <= 1) return { label: 'Bình thường', color: 'text-emerald-600', bg: 'bg-emerald-50' };
-  if (z <= 2) return { label: 'Nguy cơ béo phì', color: 'text-orange-600', bg: 'bg-orange-50' };
-  return { label: 'Béo phì', color: 'text-red-600', bg: 'bg-red-50' };
+export function evaluateBMIZScore(z, ageInMonths) {
+  let label = '';
+  let color = '';
+  let bg = '';
+  let note = undefined;
+
+  if (z > 3) {
+    label = 'Béo phì nặng'; color = 'text-red-600'; bg = 'bg-red-50';
+  } else if (z > 2) {
+    label = 'Béo phì'; color = 'text-orange-600'; bg = 'bg-orange-50';
+  } else if (z > 1) {
+    label = 'Thừa cân'; color = 'text-yellow-600'; bg = 'bg-yellow-50';
+  } else if (z >= -2) {
+    label = 'Bình thường'; color = 'text-emerald-600'; bg = 'bg-emerald-50';
+  } else if (z >= -3) {
+    label = 'Gầy'; color = 'text-blue-600'; bg = 'bg-blue-50';
+  } else {
+    label = 'Rất gầy'; color = 'text-purple-600'; bg = 'bg-purple-50';
+  }
+
+  if (ageInMonths < 60 && z > 1) {
+    label = 'Không áp dụng';
+    color = 'text-slate-500';
+    bg = 'bg-slate-100';
+    note = 'Không áp dụng đối chiếu BMI đánh giá thừa cân béo phì cho trẻ dưới 5 tuổi.';
+  }
+
+  return { label, color, bg, note };
 }
 
 export function calculateValueFromZScore(z, l, m, s) {
