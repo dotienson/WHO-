@@ -15,7 +15,30 @@ import {
 } from './utils/whoData';
 import GrowthCharts from './components/GrowthCharts';
 
+const getAverageGrowthVelocity = (ageInMonths: number, gender: 'boy' | 'girl') => {
+  if (ageInMonths < 6) return '16-17 cm';
+  if (ageInMonths < 12) return '8 cm';
+  if (ageInMonths < 24) return '10 cm (khoảng 10-14 cm)';
+  if (ageInMonths < 36) return '8 cm';
+  if (ageInMonths < 48) return '7 cm';
+  if (ageInMonths < 120) return '5-6 cm';
+  
+  if (gender === 'girl') {
+    if (ageInMonths < 132) return '5.5 cm'; // 10 years old
+    return '8-12 cm'; // Puberty
+  } else {
+    if (ageInMonths < 144) return '5-6 cm'; // 10-11 years
+    if (ageInMonths < 156) return '4.9 cm'; // 12 years old
+    return '10-14 cm'; // Puberty
+  }
+};
+
 export default function App() {
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [username, setUsername] = useState('');
+  const [passcode, setPasscode] = useState('');
+  const [unlockError, setUnlockError] = useState('');
+
   const [gender, setGender] = useState<'boy' | 'girl'>('boy');
   const [ageMode, setAgeMode] = useState<'manual' | 'date'>('date');
   const [dobD, setDobD] = useState<string>('');
@@ -31,6 +54,8 @@ export default function App() {
   const [height, setHeight] = useState<number | ''>('');
   const [weight, setWeight] = useState<number | ''>('');
   const [headCircumference, setHeadCircumference] = useState<number | ''>('');
+  const [prevHeight, setPrevHeight] = useState<number | ''>('');
+  const [prevMonths, setPrevMonths] = useState<number | ''>('');
   const [fatherHeight, setFatherHeight] = useState<number | ''>('');
   const [motherHeight, setMotherHeight] = useState<number | ''>('');
   const [dateError, setDateError] = useState<string>('');
@@ -69,6 +94,12 @@ export default function App() {
     supMi: false,
     tienSuGiaDinh: false,
     kinhNguyetNu: false,
+    ngungCao: false,
+    caoBatThuong: false,
+    tieuNhieu: false,
+    veCushing: false,
+    ramLong: false,
+    caoHuyetAp: false,
     khac: false
   });
 
@@ -138,10 +169,14 @@ export default function App() {
       setMeasurementError('Cân nặng phải từ 3kg đến 200kg');
     } else if (headCircumference !== '' && (headCircumference < 30 || headCircumference > 80)) {
       setMeasurementError('Vòng đầu phải từ 30cm đến 80cm');
+    } else if (prevHeight !== '' && (prevHeight < 50 || prevHeight > 200)) {
+      setMeasurementError('Chiều cao lần trước phải từ 50cm đến 200cm');
+    } else if (height !== '' && prevHeight !== '' && prevHeight > height) {
+      setMeasurementError('Chiều cao lần trước không thể lớn hơn chiều cao hiện tại');
     } else {
       setMeasurementError('');
     }
-  }, [height, weight, headCircumference]);
+  }, [height, weight, headCircumference, prevHeight]);
 
   const ageInMonths = years * 12 + months;
 
@@ -203,6 +238,8 @@ export default function App() {
       mphZ = calculateZScoreLMS(mph, adultL, adultM, adultS);
     }
 
+    const bsa = Math.sqrt((Number(height) * Number(weight)) / 3600);
+
     return {
       heightZ,
       weightZ,
@@ -210,15 +247,72 @@ export default function App() {
       bmiZ,
       hcZ,
       mph,
-      mphZ
+      mphZ,
+      bsa
     };
   };
 
   const results = calculateResults();
 
+  useEffect(() => {
+    if (passcode === '8386') {
+      setIsUnlocked(true);
+      setUnlockError('');
+    }
+  }, [passcode]);
+
+  const handleUnlock = () => {
+    if (passcode === '8386') {
+      setIsUnlocked(true);
+      setUnlockError('');
+    } else {
+      setUnlockError('Mã truy cập không đúng');
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <>
+      {!isUnlocked && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-4">
+          <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl">
+            <h2 className="text-2xl font-bold text-center text-indigo-900 mb-6">TAH EndoScreen</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Tên người dùng</label>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+                  placeholder="Vui lòng nhập username"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Mật khẩu</label>
+                <input
+                  type="password"
+                  value={passcode}
+                  onChange={(e) => setPasscode(e.target.value)}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+                  placeholder="Nhập mã"
+                />
+              </div>
+              {unlockError && <p className="text-red-500 text-sm">{unlockError}</p>}
+              <button
+                onClick={handleUnlock}
+                className="w-full bg-indigo-600 text-white font-medium py-3 rounded-xl hover:bg-indigo-700 transition-colors"
+              >
+                Truy cập ứng dụng
+              </button>
+              <p className="text-center text-sm text-slate-500 mt-4">
+                Liên hệ BS.Sơn để đăng kí sử dụng
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      <div className={`min-h-screen bg-slate-50 text-slate-900 font-sans py-8 px-4 sm:px-6 lg:px-8 ${!isUnlocked ? 'blur-sm pointer-events-none' : ''}`}>
+        <div className="max-w-4xl mx-auto space-y-8">
         
         {/* Header */}
         <div className="text-center space-y-2">
@@ -229,7 +323,7 @@ export default function App() {
             Công cụ hỗ trợ bác sĩ phòng khám sàng lọc về nội tiết - tăng trưởng trẻ em
           </p>
           <p className="text-slate-400 text-sm max-w-xl mx-auto">
-            &copy; Đỗ Tiến Sơn 2026
+            Bản quyền thuộc về BS. Đỗ Tiến Sơn
           </p>
         </div>
 
@@ -368,7 +462,7 @@ export default function App() {
                   ) : (
                     <div className="bg-indigo-50 text-indigo-700 text-sm py-2 px-3 rounded-lg flex justify-between items-center border border-indigo-100">
                       <span>Tuổi tính được:</span>
-                      <span className="font-semibold">{years} năm {months} tháng</span>
+                      <span className="font-semibold">{years} tuổi {months} tháng</span>
                     </div>
                   )}
                 </div>
@@ -464,6 +558,43 @@ export default function App() {
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400">cm</span>
                 </div>
               </div>
+
+              <div className="pt-2 border-t border-slate-100">
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Chiều cao lần khám trước (Tùy chọn)</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="relative">
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      pattern="[0-9]*"
+                      value={prevHeight}
+                      onChange={(e) => setPrevHeight(e.target.value ? Number(e.target.value) : '')}
+                      className="w-full pl-4 pr-12 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                      placeholder="Ví dụ: 105"
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400">cm</span>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      min="3"
+                      max="48"
+                      value={prevMonths}
+                      onChange={(e) => setPrevMonths(e.target.value ? Number(e.target.value) : '')}
+                      className="w-full pl-4 pr-16 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                      placeholder="Cách đây"
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400">tháng</span>
+                  </div>
+                </div>
+                {prevMonths !== '' && (Number(prevMonths) < 3 || Number(prevMonths) > 48) && (
+                  <p className="text-xs text-amber-600 mt-2">
+                    Ngoài khoảng so sánh có ý nghĩa và không hiển thị trên biểu đồ
+                  </p>
+                )}
+              </div>
               
               {measurementError && (
                 <div className="bg-red-50 text-red-600 text-sm py-2 px-3 rounded-lg border border-red-100">
@@ -520,6 +651,12 @@ export default function App() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {[
+                  { id: 'ngungCao', label: 'Ngừng cao' },
+                  { id: 'caoBatThuong', label: 'Cao bất thường' },
+                  { id: 'tieuNhieu', label: 'Tiểu nhiều' },
+                  { id: 'veCushing', label: 'Vẻ Cushing' },
+                  { id: 'ramLong', label: 'Rậm lông' },
+                  { id: 'caoHuyetAp', label: 'Cao huyết áp' },
                   { id: 'buouCo', label: 'Bướu cổ' },
                   { id: 'gaiDen', label: 'Gai đen' },
                   { id: 'beoPhi', label: 'Béo phì' },
@@ -597,6 +734,24 @@ export default function App() {
                   evaluation={evaluateHeightZScore(results.heightZ)}
                 />
 
+                {/* Growth Velocity Result */}
+                {prevHeight !== '' && prevMonths !== '' && Number(prevMonths) >= 3 && Number(prevMonths) <= 48 && Number(prevHeight) <= Number(height) && (
+                  <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col transition-all hover:shadow-md">
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <h3 className="text-sm font-medium text-slate-500">Tốc độ tăng trưởng trung bình</h3>
+                        <p className="text-xs text-slate-400 mt-1">Dựa trên lần khám trước</p>
+                      </div>
+                      <div className="text-xl font-semibold text-slate-900">
+                        {(((Number(height) - Number(prevHeight)) / Number(prevMonths)) * 6).toFixed(1)} cm / 6 tháng
+                      </div>
+                    </div>
+                    <div className="text-xs text-indigo-700 bg-indigo-50 p-2.5 rounded-lg border border-indigo-100">
+                      Ở lứa tuổi này, tốc độ tăng chiều cao trung bình {getAverageGrowthVelocity(ageInMonths, gender)}/năm (PMID: 26132126)
+                    </div>
+                  </div>
+                )}
+
                 {/* Weight Result */}
                 {results.weightZ !== null ? (
                   <ResultCard 
@@ -622,6 +777,15 @@ export default function App() {
                   percentile={zScoreToPercentile(results.bmiZ)}
                   evaluation={evaluateBMIZScore(results.bmiZ, ageInMonths)}
                 />
+
+                {/* BSA Result */}
+                <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between transition-all hover:shadow-md">
+                  <div>
+                    <h3 className="text-sm font-medium text-slate-500">Diện tích da (BSA)</h3>
+                    <p className="text-xs text-slate-400 mt-1">Công thức Mosteller</p>
+                  </div>
+                  <div className="text-xl font-semibold text-slate-900">{results.bsa.toFixed(2)} m²</div>
+                </div>
 
                 {/* Head Circumference Result */}
                 {results.hcZ !== null ? (
@@ -670,6 +834,9 @@ export default function App() {
                     </div>
                   </div>
                 )}
+
+                {/* Percentile Visualizer */}
+                <PercentileVisualizer percentile={zScoreToPercentile(results.heightZ)} gender={gender} />
               </div>
             )}
           </div>
@@ -689,6 +856,8 @@ export default function App() {
             mphZ={results.mphZ}
             hc={headCircumference}
             hcZ={results.hcZ}
+            prevHeight={prevHeight}
+            prevMonths={prevMonths}
           />
         )}
 
@@ -701,19 +870,57 @@ export default function App() {
           <ol className="list-decimal list-inside text-xs text-slate-500 space-y-2">
             <li>World Health Organization. <em>WHO Child Growth Standards: Length/height-for-age, weight-for-age, weight-for-length, weight-for-height and body mass index-for-age: Methods and development</em>. Geneva, Switzerland: World Health Organization; 2006.</li>
             <li>de Onis M, Onyango AW, Borghi E, Siyam A, Nishida C, Siekmann J. Development of a WHO growth reference for school-aged children and adolescents. <em>Bull World Health Organ</em>. 2007;85(9):660-667. doi:10.2471/blt.07.043497</li>
+            <li>Barstow C, Rerucha C. Evaluation of Short and Tall Stature in Children. <em>Am Fam Physician</em>. 2015;92(1):43-50.</li>
           </ol>
         </div>
 
         {/* Footer */}
         <div className="pt-8 pb-4 text-center mt-4">
-          <p className="text-sm text-slate-500 font-medium">
-            ThS.BS. Đỗ Tiến Sơn phát triển năm 2026 - Đang giai đoạn thử nghiệm
+          <p className="text-sm text-slate-500 font-medium leading-relaxed">
+            Một sản phẩm sáng tạo của ThS.BS. Đỗ Tiến Sơn<br />
+            Uỷ viên Tiểu ban Đào tạo nền tảng số - Hội Nội tiết Nhi khoa Châu Âu (ESPE)<br />
+            Sản phẩm đang thử nghiệm nội bộ trong Mạng lưới Tầm soát và Tối ưu Tăng trưởng - Dinh dưỡng Trẻ em
           </p>
-          <p className="text-xs text-slate-400 mt-2">
+          <p className="text-xs text-slate-400 mt-4">
             Thông báo lỗi, góp ý: <a href="mailto:bs.dotienson@gmail.com" className="text-indigo-500 hover:underline">bs.dotienson@gmail.com</a>
           </p>
         </div>
 
+      </div>
+    </div>
+    </>
+  );
+}
+
+function PercentileVisualizer({ percentile, gender }: { percentile: number, gender: 'boy' | 'girl' }) {
+  const p = Math.round(percentile);
+  const color = gender === 'boy' ? 'bg-blue-500' : 'bg-pink-500';
+  const inactiveColor = 'bg-slate-200';
+
+  return (
+    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 mt-4 transition-all hover:shadow-md">
+      <h3 className="text-sm font-medium text-slate-700 mb-2">Mô phỏng bách phân vị (Percentile)</h3>
+      <p className="text-xs text-slate-500 mb-4">
+        Trong 100 trẻ cùng tuổi và giới tính xếp hàng theo chiều cao tăng dần, bé đứng ở vị trí thứ <span className="font-bold text-slate-700">{p}</span>.
+      </p>
+      <div className="flex items-end h-16 space-x-[1px] w-full overflow-hidden">
+        {Array.from({ length: 100 }).map((_, i) => {
+          const isCurrent = i + 1 === p;
+          // Calculate height from 20% to 100%
+          const h = 20 + (i / 99) * 80;
+          return (
+            <div
+              key={i}
+              className={`flex-1 rounded-t-sm ${isCurrent ? color : inactiveColor}`}
+              style={{ height: `${h}%` }}
+            />
+          );
+        })}
+      </div>
+      <div className="flex justify-between text-[10px] text-slate-400 mt-2 font-mono">
+        <span>1st</span>
+        <span>50th</span>
+        <span>100th</span>
       </div>
     </div>
   );

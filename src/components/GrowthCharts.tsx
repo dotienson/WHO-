@@ -33,9 +33,11 @@ interface GrowthChartsProps {
   mphZ: number | null;
   hc: number | '';
   hcZ: number | null;
+  prevHeight: number | '';
+  prevMonths: number | '';
 }
 
-export default function GrowthCharts({ gender, ageInMonths, height, weight, bmi, mph, heightZ, mphZ, hc, hcZ }: GrowthChartsProps) {
+export default function GrowthCharts({ gender, ageInMonths, height, weight, bmi, mph, heightZ, mphZ, hc, hcZ, prevHeight, prevMonths }: GrowthChartsProps) {
   const isBoy = gender === 'boy';
   const ageInYears = ageInMonths / 12;
 
@@ -184,17 +186,29 @@ export default function GrowthCharts({ gender, ageInMonths, height, weight, bmi,
               {height && (
                 <ReferenceDot x={ageInYears} y={Number(height)} r={8} fill="#9333ea" stroke="#fff" strokeWidth={2} />
               )}
+              {prevHeight && prevMonths && Number(prevMonths) >= 3 && Number(prevMonths) <= 48 && (
+                <ReferenceDot x={(ageInMonths - Number(prevMonths)) / 12} y={Number(prevHeight)} r={6} fill="#3b82f6" stroke="#fff" strokeWidth={2} />
+              )}
+              {prevHeight && prevMonths && height && Number(prevMonths) >= 3 && Number(prevMonths) <= 48 && (
+                <ReferenceLine segment={[{ x: (ageInMonths - Number(prevMonths)) / 12, y: Number(prevHeight) }, { x: ageInYears, y: Number(height) }]} stroke="#3b82f6" strokeWidth={2} strokeDasharray="3 3" />
+              )}
               {mph && (
                 <ReferenceDot x={19} y={mph} r={8} fill="#ec4899" stroke="#fff" strokeWidth={2} />
               )}
             </LineChart>
           </ResponsiveContainer>
         </div>
-        <div className="flex items-center justify-center space-x-6 mt-4 text-xs text-slate-500">
+        <div className="flex flex-wrap items-center justify-center gap-4 mt-4 text-xs text-slate-500">
           {height && (
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 rounded-full bg-purple-600 border-2 border-white shadow-sm" />
               <span>Chiều cao hiện tại</span>
+            </div>
+          )}
+          {prevHeight && prevMonths && Number(prevMonths) >= 3 && Number(prevMonths) <= 48 && (
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-blue-500 border-2 border-white shadow-sm" />
+              <span>Chiều cao lần trước</span>
             </div>
           )}
           {mph && (
