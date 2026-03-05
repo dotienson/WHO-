@@ -254,6 +254,24 @@ export default function App() {
 
   const results = calculateResults();
 
+  const hasClinicalSign = Object.values(clinicalSigns).some(val => val === true);
+  const hasExtremeZ = results && (
+    (results.heightZ > 1.5 || results.heightZ < -1.5) ||
+    (results.weightZ !== null && (results.weightZ > 1.5 || results.weightZ < -1.5)) ||
+    (results.bmiZ > 1.5 || results.bmiZ < -1.5) ||
+    (results.hcZ !== null && (results.hcZ > 1.5 || results.hcZ < -1.5))
+  );
+  const isWarning = hasExtremeZ || hasClinicalSign;
+
+  let bgColor = 'bg-slate-50';
+  if (isWarning) {
+    bgColor = 'bg-orange-200';
+  } else if (gender === 'boy') {
+    bgColor = 'bg-sky-100';
+  } else if (gender === 'girl') {
+    bgColor = 'bg-pink-100';
+  }
+
   useEffect(() => {
     if (passcode === '8386') {
       setIsUnlocked(true);
@@ -311,16 +329,16 @@ export default function App() {
           </div>
         </div>
       )}
-      <div className={`min-h-screen bg-slate-50 text-slate-900 font-sans py-8 px-4 sm:px-6 lg:px-8 ${!isUnlocked ? 'blur-sm pointer-events-none' : ''}`}>
+      <div className={`min-h-screen ${bgColor} text-slate-900 font-sans py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-500 ${!isUnlocked ? 'blur-sm pointer-events-none' : ''}`}>
         <div className="max-w-4xl mx-auto space-y-8">
         
         {/* Header */}
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold tracking-tight text-[#000080]" style={{ fontFamily: 'Helvetica, Arial, sans-serif' }}>
-            TAH EndoScreen 2.0
+            EndoScreen 2.1 Beta
           </h1>
           <p className="text-slate-600 max-w-xl mx-auto font-medium">
-            Công cụ hỗ trợ bác sĩ phòng khám sàng lọc về nội tiết - tăng trưởng trẻ em
+            Trợ lí thông minh cho phòng khám Nội tiết - Dinh dưỡng - Tăng trưởng Trẻ em
           </p>
           <p className="text-slate-400 text-sm max-w-xl mx-auto">
             Bản quyền thuộc về BS. Đỗ Tiến Sơn
@@ -699,14 +717,7 @@ export default function App() {
               <div className="space-y-4">
                 {/* Warning Alert */}
                 {(() => {
-                  const hasExtremeZ = 
-                    (results.heightZ > 1.5 || results.heightZ < -1.5) ||
-                    (results.weightZ !== null && (results.weightZ > 1.5 || results.weightZ < -1.5)) ||
-                    (results.bmiZ > 1.5 || results.bmiZ < -1.5);
-                  
-                  const hasClinicalSign = Object.values(clinicalSigns).some(val => val === true);
-
-                  if (hasExtremeZ || hasClinicalSign) {
+                  if (isWarning) {
                     return (
                       <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start space-x-3 shadow-sm">
                         <AlertTriangle className="w-6 h-6 text-red-600 shrink-0 mt-0.5" />
@@ -878,8 +889,7 @@ export default function App() {
         <div className="pt-8 pb-4 text-center mt-4">
           <p className="text-sm text-slate-500 font-medium leading-relaxed">
             Một sản phẩm sáng tạo của ThS.BS. Đỗ Tiến Sơn<br />
-            Uỷ viên Tiểu ban Đào tạo nền tảng số - Hội Nội tiết Nhi khoa Châu Âu (ESPE)<br />
-            Sản phẩm đang thử nghiệm nội bộ trong Mạng lưới Tầm soát và Tối ưu Tăng trưởng - Dinh dưỡng Trẻ em
+            Sản phẩm đang thử nghiệm nội bộ; các kết quả mang tính tham khảo, không trực tiếp quyết định chẩn đoán và tư vấn lâm sàng
           </p>
           <p className="text-xs text-slate-400 mt-4">
             Thông báo lỗi, góp ý: <a href="mailto:bs.dotienson@gmail.com" className="text-indigo-500 hover:underline">bs.dotienson@gmail.com</a>
