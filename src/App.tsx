@@ -37,7 +37,6 @@ export default function App() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
-  const [patientId, setPatientId] = useState('');
   const [username, setUsername] = useState('');
   const [passcode, setPasscode] = useState('');
   const [unlockError, setUnlockError] = useState('');
@@ -374,16 +373,10 @@ export default function App() {
         <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Header */}
-        <div className="bg-white/95 backdrop-blur-sm p-6 rounded-3xl shadow-sm border border-slate-100 text-center space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight text-[#800000]" style={{ fontFamily: 'Helvetica, Arial, sans-serif' }}>
-            EndoScreen 2.2
+        <div className="text-center pt-4 pb-2">
+          <h1 className="text-3xl font-bold tracking-tight text-[#000080]" style={{ fontFamily: 'Helvetica, Arial, sans-serif' }}>
+            EndoScreen 2.2 - Dr.Sơn
           </h1>
-          <p className="text-[#000080] max-w-xl mx-auto font-medium">
-            Ứng dụng hỗ trợ sàng lọc về Nội tiết Nhi - Dinh dưỡng và Tăng trưởng
-          </p>
-          <p className="text-[#000080] text-sm max-w-xl mx-auto font-bold uppercase">
-            ĐANG KIỂM THỬ NỘI BỘ
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -393,21 +386,6 @@ export default function App() {
             <div className="flex items-center space-x-2 pb-4 border-b border-slate-100">
               <Baby className="w-5 h-5 text-slate-400" />
               <h2 className="text-lg font-medium">Thông tin của bé</h2>
-            </div>
-
-            {/* Patient ID */}
-            <div className="space-y-3">
-              <label className="block text-sm font-medium text-slate-700">ID</label>
-              <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Nhập ID"
-                  value={patientId}
-                  onChange={(e) => setPatientId(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm"
-                />
-              </div>
             </div>
 
             {/* Gender */}

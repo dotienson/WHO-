@@ -177,11 +177,11 @@ export default function GrowthCharts({ gender, ageInMonths, height, weight, bmi,
               <YAxis tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }} />
-              <Line type="monotone" dataKey="+3 SD" stroke="#FF9AA2" strokeWidth={1.5} dot={false} />
-              <Line type="monotone" dataKey="+2 SD" stroke="#FFB3BA" strokeWidth={1.5} dot={false} />
-              <Line type="monotone" dataKey="Mean" stroke="#B9FBC0" strokeWidth={2.5} dot={false} />
-              <Line type="monotone" dataKey="-2 SD" stroke="#FFB3BA" strokeWidth={1.5} dot={false} />
-              <Line type="monotone" dataKey="-3 SD" stroke="#FF9AA2" strokeWidth={1.5} dot={false} />
+              <Line type="monotone" dataKey="+3 SD" stroke="#f87171" strokeWidth={1.5} dot={false} />
+              <Line type="monotone" dataKey="+2 SD" stroke="#fbbf24" strokeWidth={1.5} dot={false} />
+              <Line type="monotone" dataKey="Mean" stroke="#34d399" strokeWidth={2.5} dot={false} />
+              <Line type="monotone" dataKey="-2 SD" stroke="#fbbf24" strokeWidth={1.5} dot={false} />
+              <Line type="monotone" dataKey="-3 SD" stroke="#f87171" strokeWidth={1.5} dot={false} />
               
               {height && (
                 <ReferenceDot x={ageInYears} y={Number(height)} r={8} fill="#9333ea" stroke="#fff" strokeWidth={2} />
@@ -232,11 +232,11 @@ export default function GrowthCharts({ gender, ageInMonths, height, weight, bmi,
                 <YAxis tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }} />
-                <Line type="monotone" dataKey="+3 SD" stroke="#FF9AA2" strokeWidth={1.5} dot={false} />
-                <Line type="monotone" dataKey="+2 SD" stroke="#FFB3BA" strokeWidth={1.5} dot={false} />
-                <Line type="monotone" dataKey="Mean" stroke="#B9FBC0" strokeWidth={2.5} dot={false} />
-                <Line type="monotone" dataKey="-2 SD" stroke="#FFB3BA" strokeWidth={1.5} dot={false} />
-                <Line type="monotone" dataKey="-3 SD" stroke="#FF9AA2" strokeWidth={1.5} dot={false} />
+                <Line type="monotone" dataKey="+3 SD" stroke="#f87171" strokeWidth={1.5} dot={false} />
+                <Line type="monotone" dataKey="+2 SD" stroke="#fbbf24" strokeWidth={1.5} dot={false} />
+                <Line type="monotone" dataKey="Mean" stroke="#34d399" strokeWidth={2.5} dot={false} />
+                <Line type="monotone" dataKey="-2 SD" stroke="#fbbf24" strokeWidth={1.5} dot={false} />
+                <Line type="monotone" dataKey="-3 SD" stroke="#f87171" strokeWidth={1.5} dot={false} />
                 
                 {weight && (
                   <ReferenceDot x={ageInYears} y={Number(weight)} r={8} fill="#9333ea" stroke="#fff" strokeWidth={2} />
@@ -266,11 +266,11 @@ export default function GrowthCharts({ gender, ageInMonths, height, weight, bmi,
               <YAxis tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }} />
-              <Line type="monotone" dataKey="+3 SD" stroke="#FF9AA2" strokeWidth={1.5} dot={false} />
-              <Line type="monotone" dataKey="+2 SD" stroke="#FFB3BA" strokeWidth={1.5} dot={false} />
-              <Line type="monotone" dataKey="Mean" stroke="#B9FBC0" strokeWidth={2.5} dot={false} />
-              <Line type="monotone" dataKey="-2 SD" stroke="#FFB3BA" strokeWidth={1.5} dot={false} />
-              <Line type="monotone" dataKey="-3 SD" stroke="#FF9AA2" strokeWidth={1.5} dot={false} />
+              <Line type="monotone" dataKey="+3 SD" stroke="#f87171" strokeWidth={1.5} dot={false} />
+              <Line type="monotone" dataKey="+2 SD" stroke="#fbbf24" strokeWidth={1.5} dot={false} />
+              <Line type="monotone" dataKey="Mean" stroke="#34d399" strokeWidth={2.5} dot={false} />
+              <Line type="monotone" dataKey="-2 SD" stroke="#fbbf24" strokeWidth={1.5} dot={false} />
+              <Line type="monotone" dataKey="-3 SD" stroke="#f87171" strokeWidth={1.5} dot={false} />
               
               {bmi && (
                 <ReferenceDot x={ageInYears} y={bmi} r={8} fill="#9333ea" stroke="#fff" strokeWidth={2} />
@@ -300,11 +300,11 @@ export default function GrowthCharts({ gender, ageInMonths, height, weight, bmi,
                 <YAxis domain={['auto', 'auto']} tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }} />
-                <Line type="monotone" dataKey="+3 SD" stroke="#FF9AA2" strokeWidth={1.5} dot={false} />
-                <Line type="monotone" dataKey="+2 SD" stroke="#FFB3BA" strokeWidth={1.5} dot={false} />
-                <Line type="monotone" dataKey="Mean" stroke="#B9FBC0" strokeWidth={2.5} dot={false} />
-                <Line type="monotone" dataKey="-2 SD" stroke="#FFB3BA" strokeWidth={1.5} dot={false} />
-                <Line type="monotone" dataKey="-3 SD" stroke="#FF9AA2" strokeWidth={1.5} dot={false} />
+                <Line type="monotone" dataKey="+3 SD" stroke="#f87171" strokeWidth={1.5} dot={false} />
+                <Line type="monotone" dataKey="+2 SD" stroke="#fbbf24" strokeWidth={1.5} dot={false} />
+                <Line type="monotone" dataKey="Mean" stroke="#34d399" strokeWidth={2.5} dot={false} />
+                <Line type="monotone" dataKey="-2 SD" stroke="#fbbf24" strokeWidth={1.5} dot={false} />
+                <Line type="monotone" dataKey="-3 SD" stroke="#f87171" strokeWidth={1.5} dot={false} />
                 
                 {hc && (
                   <ReferenceDot x={ageInYears} y={Number(hc)} r={8} fill="#9333ea" stroke="#fff" strokeWidth={2} />
