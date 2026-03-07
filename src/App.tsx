@@ -51,13 +51,13 @@ export default function App() {
   const [doeY, setDoeY] = useState<string>(today.getFullYear().toString());
   const [years, setYears] = useState<number>(0);
   const [months, setMonths] = useState<number>(0);
-  const [height, setHeight] = useState<number | ''>('');
-  const [weight, setWeight] = useState<number | ''>('');
-  const [headCircumference, setHeadCircumference] = useState<number | ''>('');
-  const [prevHeight, setPrevHeight] = useState<number | ''>('');
-  const [prevMonths, setPrevMonths] = useState<number | ''>('');
-  const [fatherHeight, setFatherHeight] = useState<number | ''>('');
-  const [motherHeight, setMotherHeight] = useState<number | ''>('');
+  const [height, setHeight] = useState<string>('');
+  const [weight, setWeight] = useState<string>('');
+  const [headCircumference, setHeadCircumference] = useState<string>('');
+  const [prevHeight, setPrevHeight] = useState<string>('');
+  const [prevMonths, setPrevMonths] = useState<string>('');
+  const [fatherHeight, setFatherHeight] = useState<string>('');
+  const [motherHeight, setMotherHeight] = useState<string>('');
   const [dateError, setDateError] = useState<string>('');
   const [measurementError, setMeasurementError] = useState<string>('');
 
@@ -102,6 +102,12 @@ export default function App() {
     caoHuyetAp: false,
     khac: false
   });
+
+  const parseInput = (val: string | number): number | null => {
+    if (val === '' || val === null || val === undefined) return null;
+    const parsed = parseFloat(String(val).replace(',', '.'));
+    return isNaN(parsed) ? null : parsed;
+  };
 
   useEffect(() => {
     if (ageMode === 'date') {
@@ -152,8 +158,8 @@ export default function App() {
         const calcYears = Math.max(0, y);
         const calcMonths = Math.max(0, m);
 
-        if (calcYears < 1 || calcYears > 19) {
-          setDateError('Tuổi ngoài khoảng 1 đến 19 tuổi');
+        if (calcYears < 0 || calcYears > 19) {
+          setDateError('Tuổi ngoài khoảng 0 đến 19 tuổi');
         }
 
         setYears(calcYears);
@@ -163,15 +169,20 @@ export default function App() {
   }, [dobD, dobM, dobY, doeD, doeM, doeY, ageMode]);
 
   useEffect(() => {
-    if (height !== '' && (height < 50 || height > 200)) {
-      setMeasurementError('Chiều cao phải từ 50cm đến 200cm');
-    } else if (weight !== '' && (weight < 3 || weight > 200)) {
-      setMeasurementError('Cân nặng phải từ 3kg đến 200kg');
-    } else if (headCircumference !== '' && (headCircumference < 30 || headCircumference > 80)) {
+    const h = parseInput(height);
+    const w = parseInput(weight);
+    const hc = parseInput(headCircumference);
+    const ph = parseInput(prevHeight);
+
+    if (h !== null && (h < 30 || h > 200)) {
+      setMeasurementError('Chiều cao phải từ 30cm đến 200cm');
+    } else if (w !== null && (w < 1 || w > 200)) {
+      setMeasurementError('Cân nặng phải từ 1kg đến 200kg');
+    } else if (hc !== null && (hc < 30 || hc > 80)) {
       setMeasurementError('Vòng đầu phải từ 30cm đến 80cm');
-    } else if (prevHeight !== '' && (prevHeight < 50 || prevHeight > 200)) {
-      setMeasurementError('Chiều cao lần trước phải từ 50cm đến 200cm');
-    } else if (height !== '' && prevHeight !== '' && prevHeight > height) {
+    } else if (ph !== null && (ph < 30 || ph > 200)) {
+      setMeasurementError('Chiều cao lần trước phải từ 30cm đến 200cm');
+    } else if (h !== null && ph !== null && ph > h) {
       setMeasurementError('Chiều cao lần trước không thể lớn hơn chiều cao hiện tại');
     } else {
       setMeasurementError('');
@@ -182,7 +193,11 @@ export default function App() {
 
   const calculateResults = () => {
     if (ageInMonths < 0 || ageInMonths > 228) return null; // WHO data up to 19 years
-    if (!height || !weight) return null;
+    
+    const h = parseInput(height);
+    const w = parseInput(weight);
+    
+    if (h === null || w === null) return null;
     if (measurementError) return null;
 
     const isBoy = gender === 'boy';
@@ -192,7 +207,7 @@ export default function App() {
     const heightMArray = isBoy ? boysHeightM : girlsHeightM;
     const heightSArray = isBoy ? boysHeightS : girlsHeightS;
     const { l: hL, m: hM, s: hS } = interpolateLMS(ageInMonths, heightLArray, heightMArray, heightSArray);
-    const heightZ = calculateZScoreLMS(Number(height), hL, hM, hS);
+    const heightZ = calculateZScoreLMS(h, hL, hM, hS);
 
     // Weight Z-Score (only up to 10 years / 120 months)
     let weightZ: number | null = null;
@@ -201,12 +216,12 @@ export default function App() {
       const weightMArray = isBoy ? boysWeightM : girlsWeightM;
       const weightSArray = isBoy ? boysWeightS : girlsWeightS;
       const { l: wL, m: wM, s: wS } = interpolateLMS(ageInMonths, weightLArray, weightMArray, weightSArray);
-      weightZ = calculateZScoreLMS(Number(weight), wL, wM, wS);
+      weightZ = calculateZScoreLMS(w, wL, wM, wS);
     }
 
     // BMI Z-Score
-    const heightInMeters = Number(height) / 100;
-    const bmi = Number(weight) / (heightInMeters * heightInMeters);
+    const heightInMeters = h / 100;
+    const bmi = w / (heightInMeters * heightInMeters);
     const bmiLArray = isBoy ? boysBMIL : girlsBMIL;
     const bmiMArray = isBoy ? boysBMIM : girlsBMIM;
     const bmiSArray = isBoy ? boysBMIS : girlsBMIS;
@@ -215,20 +230,21 @@ export default function App() {
 
     // Head Circumference Z-Score (only up to 5 years / 60 months)
     let hcZ: number | null = null;
-    if (ageInMonths <= 60 && headCircumference) {
+    const hc = parseInput(headCircumference);
+    if (ageInMonths <= 60 && hc !== null) {
       const hcLArray = isBoy ? boysHCL : girlsHCL;
       const hcMArray = isBoy ? boysHCM : girlsHCM;
       const hcSArray = isBoy ? boysHCS : girlsHCS;
       const { l: hcl, m: hcm, s: hcs } = interpolateLMS(ageInMonths, hcLArray, hcMArray, hcSArray);
-      hcZ = calculateZScoreLMS(Number(headCircumference), hcl, hcm, hcs);
+      hcZ = calculateZScoreLMS(hc, hcl, hcm, hcs);
     }
 
     // MPH (Mid-Parental Height)
     let mph: number | null = null;
     let mphZ: number | null = null;
-    if (fatherHeight && motherHeight) {
-      const fH = Number(fatherHeight);
-      const mH = Number(motherHeight);
+    const fH = parseInput(fatherHeight);
+    const mH = parseInput(motherHeight);
+    if (fH !== null && mH !== null) {
       mph = isBoy ? (fH + mH + 13) / 2 : (fH + mH - 13) / 2;
       
       // Calculate Z-Score for target adult height (at 19 years = 228 months)
@@ -238,7 +254,7 @@ export default function App() {
       mphZ = calculateZScoreLMS(mph, adultL, adultM, adultS);
     }
 
-    const bsa = Math.sqrt((Number(height) * Number(weight)) / 3600);
+    const bsa = Math.sqrt((h * w) / 3600);
 
     return {
       heightZ,
@@ -265,7 +281,7 @@ export default function App() {
 
   let bgColor = 'bg-slate-50';
   if (isWarning) {
-    bgColor = 'bg-orange-200';
+    bgColor = 'bg-red-200';
   } else if (gender === 'boy') {
     bgColor = 'bg-sky-100';
   } else if (gender === 'girl') {
@@ -341,7 +357,7 @@ export default function App() {
             Trợ lí thông minh cho phòng khám Nội tiết - Dinh dưỡng - Tăng trưởng Trẻ em
           </p>
           <p className="text-slate-400 text-sm max-w-xl mx-auto">
-            Bản quyền thuộc về BS. Đỗ Tiến Sơn
+            Bản quyền thuộc về BS. Đỗ Tiến Sơn - dotienson.com/app
           </p>
         </div>
 
@@ -489,7 +505,7 @@ export default function App() {
                   <div className="relative">
                     <input
                       type="number"
-                      inputMode="decimal"
+                      inputMode="numeric"
                       pattern="[0-9]*"
                       min="0"
                       max="19"
@@ -498,12 +514,12 @@ export default function App() {
                       className="w-full pl-4 pr-12 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
                       placeholder="0"
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400">năm</span>
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400">tuổi</span>
                   </div>
                   <div className="relative">
                     <input
                       type="number"
-                      inputMode="decimal"
+                      inputMode="numeric"
                       pattern="[0-9]*"
                       min="0"
                       max="11"
@@ -527,13 +543,13 @@ export default function App() {
                     <Ruler className="h-4 w-4 text-slate-400" />
                   </div>
                   <input
-                    type="number"
+                    type="text"
                     inputMode="decimal"
-                    pattern="[0-9]*"
+                    pattern="[0-9.,]*"
                     value={height}
-                    onChange={(e) => setHeight(e.target.value ? Number(e.target.value) : '')}
+                    onChange={(e) => setHeight(e.target.value)}
                     className="w-full pl-10 pr-12 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
-                    placeholder="Ví dụ: 110"
+                    placeholder="Ví dụ: 110,5"
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400">cm</span>
                 </div>
@@ -546,13 +562,13 @@ export default function App() {
                     <Scale className="h-4 w-4 text-slate-400" />
                   </div>
                   <input
-                    type="number"
+                    type="text"
                     inputMode="decimal"
-                    pattern="[0-9]*"
+                    pattern="[0-9.,]*"
                     value={weight}
-                    onChange={(e) => setWeight(e.target.value ? Number(e.target.value) : '')}
+                    onChange={(e) => setWeight(e.target.value)}
                     className="w-full pl-10 pr-12 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
-                    placeholder="Ví dụ: 18.5"
+                    placeholder="Ví dụ: 18,5"
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400">kg</span>
                 </div>
@@ -565,13 +581,13 @@ export default function App() {
                     <Activity className="h-4 w-4 text-slate-400" />
                   </div>
                   <input
-                    type="number"
+                    type="text"
                     inputMode="decimal"
-                    pattern="[0-9]*"
+                    pattern="[0-9.,]*"
                     value={headCircumference}
-                    onChange={(e) => setHeadCircumference(e.target.value ? Number(e.target.value) : '')}
+                    onChange={(e) => setHeadCircumference(e.target.value)}
                     className="w-full pl-10 pr-12 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
-                    placeholder="Ví dụ: 45"
+                    placeholder="Ví dụ: 45,5"
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400">cm</span>
                 </div>
@@ -582,32 +598,30 @@ export default function App() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="relative">
                     <input
-                      type="number"
+                      type="text"
                       inputMode="decimal"
-                      pattern="[0-9]*"
+                      pattern="[0-9.,]*"
                       value={prevHeight}
-                      onChange={(e) => setPrevHeight(e.target.value ? Number(e.target.value) : '')}
+                      onChange={(e) => setPrevHeight(e.target.value)}
                       className="w-full pl-4 pr-12 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
-                      placeholder="Ví dụ: 105"
+                      placeholder="Ví dụ: 105,5"
                     />
                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400">cm</span>
                   </div>
                   <div className="relative">
                     <input
-                      type="number"
+                      type="text"
                       inputMode="numeric"
                       pattern="[0-9]*"
-                      min="3"
-                      max="48"
                       value={prevMonths}
-                      onChange={(e) => setPrevMonths(e.target.value ? Number(e.target.value) : '')}
+                      onChange={(e) => setPrevMonths(e.target.value)}
                       className="w-full pl-4 pr-16 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
                       placeholder="Cách đây"
                     />
                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400">tháng</span>
                   </div>
                 </div>
-                {prevMonths !== '' && (Number(prevMonths) < 3 || Number(prevMonths) > 48) && (
+                {prevMonths !== '' && (parseInput(prevMonths) !== null && (parseInput(prevMonths)! < 3 || parseInput(prevMonths)! > 48)) && (
                   <p className="text-xs text-amber-600 mt-2">
                     Ngoài khoảng so sánh có ý nghĩa và không hiển thị trên biểu đồ
                   </p>
@@ -632,13 +646,13 @@ export default function App() {
                   <label className="block text-xs text-slate-500 mb-1">Chiều cao Bố</label>
                   <div className="relative">
                     <input
-                      type="number"
+                      type="text"
                       inputMode="decimal"
-                      pattern="[0-9]*"
+                      pattern="[0-9.,]*"
                       value={fatherHeight}
-                      onChange={(e) => setFatherHeight(e.target.value ? Number(e.target.value) : '')}
+                      onChange={(e) => setFatherHeight(e.target.value)}
                       className="w-full pl-3 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                      placeholder="170"
+                      placeholder="170,5"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">cm</span>
                   </div>
@@ -647,13 +661,13 @@ export default function App() {
                   <label className="block text-xs text-slate-500 mb-1">Chiều cao Mẹ</label>
                   <div className="relative">
                     <input
-                      type="number"
+                      type="text"
                       inputMode="decimal"
-                      pattern="[0-9]*"
+                      pattern="[0-9.,]*"
                       value={motherHeight}
-                      onChange={(e) => setMotherHeight(e.target.value ? Number(e.target.value) : '')}
+                      onChange={(e) => setMotherHeight(e.target.value)}
                       className="w-full pl-3 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                      placeholder="158"
+                      placeholder="158,5"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">cm</span>
                   </div>
@@ -719,15 +733,30 @@ export default function App() {
                 {(() => {
                   if (isWarning) {
                     return (
-                      <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start space-x-3 shadow-sm">
+                      <div className="bg-red-100 border border-red-300 rounded-2xl p-4 flex items-start space-x-3 shadow-sm">
                         <AlertTriangle className="w-6 h-6 text-red-600 shrink-0 mt-0.5" />
                         <div>
                           <h3 className="text-red-800 font-semibold text-sm">CẢNH BÁO LÂM SÀNG</h3>
                           <p className="text-red-700 text-sm mt-1">
                             Hệ thống ghi nhận bất thường (phát hiện chỉ số nhân trắc bất thường hoặc có dấu hiệu lâm sàng nguy cơ).
                           </p>
-                          <div className="mt-2 inline-block bg-red-100 text-red-800 text-sm font-medium px-3 py-1.5 rounded-lg border border-red-200">
-                            Cần hội chẩn Nhóm lâm sàng về Nội tiết - Tăng trưởng - Di truyền Nhi khoa (ThS.BS. Đỗ Tiến Sơn hỗ trợ oncall và trực tiếp)
+                          <div className="mt-2 flex flex-wrap gap-2 items-center">
+                            <div className="inline-block bg-red-200 text-red-800 text-sm font-medium px-3 py-1.5 rounded-lg border border-red-300">
+                              Đề nghị Hội chẩn Nhóm lâm sàng về Nội tiết Nhi - Dinh dưỡng lâm sàng - Di truyền y học (BS. Đỗ Tiến Sơn - Ext. 8921)
+                              {results && evaluateBMIZScore(results.bmiZ, ageInMonths).label.includes('Béo phì') && (
+                                <span> và Hội chẩn Trung tâm Kiểm soát Cân nặng và Điều trị Béo phì</span>
+                              )}
+                            </div>
+                            <button
+                              onClick={() => {
+                                if (window.confirm('Sau đây, quý đồng nghiệp sẽ được chuyển tiếp cuộc gọi đến BS. Đỗ Tiến Sơn. Vui lòng không bật loa ngoài và không hội chẩn khi có khách hàng trong phòng khám.')) {
+                                  window.location.href = 'tel:0984144492';
+                                }
+                              }}
+                              className="inline-flex items-center px-4 py-1.5 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors shadow-sm"
+                            >
+                              Hội chẩn
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -746,7 +775,7 @@ export default function App() {
                 />
 
                 {/* Growth Velocity Result */}
-                {prevHeight !== '' && prevMonths !== '' && Number(prevMonths) >= 3 && Number(prevMonths) <= 48 && Number(prevHeight) <= Number(height) && (
+                {prevHeight !== '' && prevMonths !== '' && parseInput(prevMonths) !== null && parseInput(prevMonths)! >= 3 && parseInput(prevMonths)! <= 48 && parseInput(prevHeight) !== null && parseInput(height) !== null && parseInput(prevHeight)! <= parseInput(height)! && (
                   <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col transition-all hover:shadow-md">
                     <div className="flex items-center justify-between mb-3">
                       <div>
@@ -754,7 +783,7 @@ export default function App() {
                         <p className="text-xs text-slate-400 mt-1">Dựa trên lần khám trước</p>
                       </div>
                       <div className="text-xl font-semibold text-slate-900">
-                        {(((Number(height) - Number(prevHeight)) / Number(prevMonths)) * 6).toFixed(1)} cm / 6 tháng
+                        {(((parseInput(height)! - parseInput(prevHeight)!) / parseInput(prevMonths)!) * 6).toFixed(1)} cm / 6 tháng
                       </div>
                     </div>
                     <div className="text-xs text-indigo-700 bg-indigo-50 p-2.5 rounded-lg border border-indigo-100">
@@ -859,16 +888,16 @@ export default function App() {
           <GrowthCharts 
             gender={gender}
             ageInMonths={ageInMonths}
-            height={height}
-            weight={weight}
+            height={parseInput(height) ?? ''}
+            weight={parseInput(weight) ?? ''}
             bmi={results.bmi}
             mph={results.mph}
             heightZ={results.heightZ}
             mphZ={results.mphZ}
-            hc={headCircumference}
+            hc={parseInput(headCircumference) ?? ''}
             hcZ={results.hcZ}
-            prevHeight={prevHeight}
-            prevMonths={prevMonths}
+            prevHeight={parseInput(prevHeight) ?? ''}
+            prevMonths={parseInput(prevMonths) ?? ''}
           />
         )}
 
