@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Activity, Baby, Ruler, Scale, User, Calculator, Calendar, AlertTriangle, CheckSquare } from 'lucide-react';
+import { Activity, Baby, Ruler, Scale, User, Calculator, Calendar, AlertTriangle, CheckSquare, ChevronDown } from 'lucide-react';
 import {
   boysHeightL, boysHeightM, boysHeightS, girlsHeightL, girlsHeightM, girlsHeightS,
   boysWeightL, boysWeightM, boysWeightS, girlsWeightL, girlsWeightM, girlsWeightS,
@@ -37,6 +37,7 @@ export default function App() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
+  const [patientId, setPatientId] = useState('');
   const [username, setUsername] = useState('');
   const [passcode, setPasscode] = useState('');
   const [unlockError, setUnlockError] = useState('');
@@ -62,6 +63,7 @@ export default function App() {
   const [motherHeight, setMotherHeight] = useState<string>('');
   const [dateError, setDateError] = useState<string>('');
   const [measurementError, setMeasurementError] = useState<string>('');
+  const [showReferences, setShowReferences] = useState(false);
 
   const dobDRef = useRef<HTMLInputElement>(null);
   const dobMRef = useRef<HTMLInputElement>(null);
@@ -281,15 +283,6 @@ export default function App() {
   );
   const isWarning = hasExtremeZ || hasClinicalSign;
 
-  let bgColor = 'bg-slate-50';
-  if (isWarning) {
-    bgColor = 'bg-red-200';
-  } else if (gender === 'boy') {
-    bgColor = 'bg-sky-100';
-  } else if (gender === 'girl') {
-    bgColor = 'bg-pink-100';
-  }
-
   useEffect(() => {
     if (passcode === '8386') {
       setIsUnlocked(true);
@@ -315,9 +308,12 @@ export default function App() {
     }, 1500);
   };
 
+  const appBgColor = isWarning ? 'bg-[#FF9AA2]' : (gender === 'boy' ? 'bg-[#D1EAFF]' : 'bg-[#FFD1DC]');
+
   return (
-    <>
-      {!isUnlocked && (
+    <div className={`min-h-screen transition-colors duration-500 ${appBgColor}`}>
+      <div className="relative z-10">
+        {!isUnlocked && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-4">
           <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl">
             <h2 className="text-2xl font-bold text-center text-indigo-900 mb-6">TAH EndoScreen</h2>
@@ -374,19 +370,19 @@ export default function App() {
           </div>
         </div>
       )}
-      <div className={`min-h-screen ${bgColor} text-slate-900 font-sans py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-500 ${!isUnlocked ? 'blur-sm pointer-events-none' : ''}`}>
-        <div className="max-w-4xl mx-auto space-y-8">
+      <div className={`min-h-screen text-slate-900 font-sans py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-500 ${!isUnlocked ? 'blur-sm pointer-events-none' : ''}`}>
+        <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight text-[#000080]" style={{ fontFamily: 'Helvetica, Arial, sans-serif' }}>
+        <div className="bg-white/95 backdrop-blur-sm p-6 rounded-3xl shadow-sm border border-slate-100 text-center space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight text-[#800000]" style={{ fontFamily: 'Helvetica, Arial, sans-serif' }}>
             EndoScreen 2.2
           </h1>
-          <p className="text-slate-600 max-w-xl mx-auto font-medium">
-            Trợ lí thông minh cho phòng khám Nội tiết - Dinh dưỡng - Tăng trưởng Trẻ em
+          <p className="text-[#000080] max-w-xl mx-auto font-medium">
+            Ứng dụng hỗ trợ sàng lọc về Nội tiết Nhi - Dinh dưỡng và Tăng trưởng
           </p>
-          <p className="text-slate-400 text-sm max-w-xl mx-auto">
-            Bản quyền thuộc về BS. Đỗ Tiến Sơn - <a href="https://dotienson.com/app" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:underline">dotienson.com/app</a>
+          <p className="text-[#000080] text-sm max-w-xl mx-auto font-bold uppercase">
+            ĐANG KIỂM THỬ NỘI BỘ
           </p>
         </div>
 
@@ -399,6 +395,21 @@ export default function App() {
               <h2 className="text-lg font-medium">Thông tin của bé</h2>
             </div>
 
+            {/* Patient ID */}
+            <div className="space-y-3">
+              <label className="block text-sm font-medium text-slate-700">ID</label>
+              <div className="relative">
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Nhập ID"
+                  value={patientId}
+                  onChange={(e) => setPatientId(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm"
+                />
+              </div>
+            </div>
+
             {/* Gender */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-slate-700">Giới tính</label>
@@ -407,7 +418,7 @@ export default function App() {
                   onClick={() => setGender('boy')}
                   className={`py-2.5 px-4 rounded-xl text-sm font-medium transition-colors ${
                     gender === 'boy' 
-                      ? 'bg-blue-500 text-white shadow-sm' 
+                      ? 'bg-[#D1EAFF] text-slate-800 shadow-sm' 
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
@@ -417,7 +428,7 @@ export default function App() {
                   onClick={() => setGender('girl')}
                   className={`py-2.5 px-4 rounded-xl text-sm font-medium transition-colors ${
                     gender === 'girl' 
-                      ? 'bg-pink-500 text-white shadow-sm' 
+                      ? 'bg-[#FFD1DC] text-slate-800 shadow-sm' 
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
@@ -762,7 +773,7 @@ export default function App() {
                 {(() => {
                   if (isWarning) {
                     return (
-                      <div className="bg-red-100 border border-red-300 rounded-2xl p-4 flex items-start space-x-3 shadow-sm">
+                      <div className="bg-white border-2 border-red-500 rounded-2xl p-4 flex items-start space-x-3 shadow-md">
                         <AlertTriangle className="w-6 h-6 text-red-600 shrink-0 mt-0.5" />
                         <div>
                           <h3 className="text-red-800 font-semibold text-sm">CẢNH BÁO LÂM SÀNG</h3>
@@ -915,54 +926,71 @@ export default function App() {
 
         {/* Growth Charts */}
         {results && (
-          <GrowthCharts 
-            gender={gender}
-            ageInMonths={ageInMonths}
-            height={parseInput(height) ?? ''}
-            weight={parseInput(weight) ?? ''}
-            bmi={results.bmi}
-            mph={results.mph}
-            heightZ={results.heightZ}
-            mphZ={results.mphZ}
-            hc={parseInput(headCircumference) ?? ''}
-            hcZ={results.hcZ}
-            prevHeight={parseInput(prevHeight) ?? ''}
-            prevMonths={parseInput(prevMonths) ?? ''}
-          />
+          <div>
+            <GrowthCharts 
+              gender={gender}
+              ageInMonths={ageInMonths}
+              height={parseInput(height) ?? ''}
+              weight={parseInput(weight) ?? ''}
+              bmi={results.bmi}
+              mph={results.mph}
+              heightZ={results.heightZ}
+              mphZ={results.mphZ}
+              hc={parseInput(headCircumference) ?? ''}
+              hcZ={results.hcZ}
+              prevHeight={parseInput(prevHeight) ?? ''}
+              prevMonths={parseInput(prevMonths) ?? ''}
+            />
+          </div>
         )}
 
         {/* References */}
-        <div className="mt-12 pt-6 border-t border-slate-200">
-          <h3 className="text-sm font-semibold text-slate-700 mb-3">Chú thích & Tài liệu tham khảo:</h3>
-          <ul className="list-disc list-inside text-xs text-slate-500 space-y-2 mb-4">
-            <li>Khoảng tham chiếu bình thường cho Chiều cao và Cân nặng được tính từ -1.5 SD đến +1.5 SD. Các trường hợp ngoài khoảng này cần được lưu ý và hội chẩn thêm.</li>
-          </ul>
-          <ol className="list-decimal list-inside text-xs text-slate-500 space-y-2">
-            <li>World Health Organization. <em>WHO Child Growth Standards: Length/height-for-age, weight-for-age, weight-for-length, weight-for-height and body mass index-for-age: Methods and development</em>. Geneva, Switzerland: World Health Organization; 2006.</li>
-            <li>de Onis M, Onyango AW, Borghi E, Siyam A, Nishida C, Siekmann J. Development of a WHO growth reference for school-aged children and adolescents. <em>Bull World Health Organ</em>. 2007;85(9):660-667. doi:10.2471/blt.07.043497</li>
-            <li>Barstow C, Rerucha C. Evaluation of Short and Tall Stature in Children. <em>Am Fam Physician</em>. 2015;92(1):43-50.</li>
-          </ol>
+        <div className="bg-white/95 backdrop-blur-sm p-6 rounded-3xl shadow-sm border border-slate-100 mt-12">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-slate-700">Chú thích & Tài liệu tham khảo</h3>
+            <button 
+              onClick={() => setShowReferences(!showReferences)}
+              className="flex items-center space-x-1 text-xs font-medium text-indigo-600 hover:text-indigo-700 transition-colors bg-indigo-50 px-3 py-1.5 rounded-xl"
+            >
+              <span>{showReferences ? 'Ẩn bớt' : 'Hiện thêm'}</span>
+              <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showReferences ? 'rotate-180' : ''}`} />
+            </button>
+          </div>
+          
+          {showReferences && (
+            <div className="mt-6 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+              <ul className="list-disc list-inside text-xs text-slate-500 space-y-2">
+                <li>Khoảng tham chiếu bình thường cho Chiều cao và Cân nặng được tính từ -1.5 SD đến +1.5 SD. Các trường hợp ngoài khoảng này cần được lưu ý và hội chẩn thêm.</li>
+              </ul>
+              <ol className="list-decimal list-inside text-xs text-slate-500 space-y-2">
+                <li>World Health Organization. <em>WHO Child Growth Standards: Length/height-for-age, weight-for-age, weight-for-length, weight-for-height and body mass index-for-age: Methods and development</em>. Geneva, Switzerland: World Health Organization; 2006.</li>
+                <li>de Onis M, Onyango AW, Borghi E, Siyam A, Nishida C, Siekmann J. Development of a WHO growth reference for school-aged children and adolescents. <em>Bull World Health Organ</em>. 2007;85(9):660-667. doi:10.2471/blt.07.043497</li>
+                <li>Barstow C, Rerucha C. Evaluation of Short and Tall Stature in Children. <em>Am Fam Physician</em>. 2015;92(1):43-50.</li>
+              </ol>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
-        <div className="pt-8 pb-4 text-center mt-4">
-          <p className="text-xs text-slate-500 leading-relaxed">
-            Ứng dụng đang thử nghiệm nội bộ.
+        <div className="pt-4 pb-4 text-center mt-2 space-y-0.5">
+          <p className="text-[10px] text-white/70">
+            Ứng dụng đang thử nghiệm nội bộ. Góp ý: <a href="mailto:bs.dotienson@gmail.com" className="hover:underline">bs.dotienson@gmail.com</a>
           </p>
-          <p className="text-xs text-slate-400 mt-4">
-            Thông báo lỗi, góp ý: <a href="mailto:bs.dotienson@gmail.com" className="text-indigo-500 hover:underline">bs.dotienson@gmail.com</a>
+          <p className="text-[10px] text-white/50">
+            Bản quyền thuộc về BS. Đỗ Tiến Sơn - Bệnh viện Đa khoa Tâm Anh
           </p>
         </div>
 
       </div>
     </div>
-    </>
+  </div>
+</div>
   );
 }
 
 function PercentileVisualizer({ percentile, gender }: { percentile: number, gender: 'boy' | 'girl' }) {
   const p = Math.round(percentile);
-  const color = gender === 'boy' ? 'bg-blue-500' : 'bg-pink-500';
+  const color = gender === 'boy' ? 'bg-[#D1EAFF]' : 'bg-[#FFD1DC]';
   const inactiveColor = 'bg-slate-200';
 
   return (
@@ -1013,7 +1041,7 @@ function ResultCard({ title, value, zScore, percentile, evaluation, note }: {
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
             <span className="text-sm text-slate-500">Z-Score:</span>
-            <span className={`font-mono font-medium ${zScore < -2 || zScore > 2 ? 'text-red-600' : 'text-slate-700'}`}>
+            <span className={`font-mono font-medium ${zScore < -2 || zScore > 2 ? 'text-[#E53E3E]' : 'text-slate-700'}`}>
               {zScore > 0 ? '+' : ''}{zScore.toFixed(2)}
             </span>
           </div>
@@ -1036,7 +1064,7 @@ function ResultCard({ title, value, zScore, percentile, evaluation, note }: {
         {/* -3 to +3 scale roughly maps to 0-100% */}
         <div className="absolute left-1/2 top-0 bottom-0 w-px bg-slate-300 z-10"></div>
         <div 
-          className={`h-full rounded-full ${zScore < -2 || zScore > 2 ? 'bg-red-400' : 'bg-emerald-400'}`}
+          className={`h-full rounded-full ${zScore < -2 || zScore > 2 ? 'bg-[#FF9AA2]' : 'bg-[#B9FBC0]'}`}
           style={{ 
             width: '4px',
             position: 'absolute',

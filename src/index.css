@@ -61,3 +61,8 @@
     --tw-ring-color: rgba(59, 130, 246, 0.5);
   }
 }
+
+.watermark-text {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.05em;
+}

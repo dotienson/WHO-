@@ -53,13 +53,13 @@ export function zScoreToPercentile(z) {
 }
 
 export function evaluateHeightZScore(z) {
-  if (z >= -1.5 && z <= 1.5) return { label: 'Trong khoảng bình thường', color: 'text-emerald-600', bg: 'bg-emerald-50' };
-  return { label: 'Cần lưu ý và hội chẩn', color: 'text-orange-600', bg: 'bg-orange-50' };
+  if (z >= -1.5 && z <= 1.5) return { label: 'Trong khoảng bình thường', color: 'text-[#2D6A4F]', bg: 'bg-[#D8F3DC]' };
+  return { label: 'Cần lưu ý và hội chẩn', color: 'text-[#E53E3E]', bg: 'bg-[#FFF5F5]' };
 }
 
 export function evaluateWeightZScore(z) {
-  if (z >= -1.5 && z <= 1.5) return { label: 'Trong khoảng bình thường', color: 'text-emerald-600', bg: 'bg-emerald-50' };
-  return { label: 'Cần lưu ý và hội chẩn', color: 'text-orange-600', bg: 'bg-orange-50' };
+  if (z >= -1.5 && z <= 1.5) return { label: 'Trong khoảng bình thường', color: 'text-[#2D6A4F]', bg: 'bg-[#D8F3DC]' };
+  return { label: 'Cần lưu ý và hội chẩn', color: 'text-[#E53E3E]', bg: 'bg-[#FFF5F5]' };
 }
 
 export function evaluateBMIZScore(z, ageInMonths) {
@@ -69,17 +69,17 @@ export function evaluateBMIZScore(z, ageInMonths) {
   let note = undefined;
 
   if (z > 3) {
-    label = 'Béo phì nặng'; color = 'text-red-600'; bg = 'bg-red-50';
+    label = 'Béo phì nặng'; color = 'text-[#9B2C2C]'; bg = 'bg-[#FFF5F5]';
   } else if (z > 2) {
-    label = 'Béo phì'; color = 'text-orange-600'; bg = 'bg-orange-50';
+    label = 'Béo phì'; color = 'text-[#E53E3E]'; bg = 'bg-[#FFF5F5]';
   } else if (z > 1) {
-    label = 'Thừa cân'; color = 'text-yellow-600'; bg = 'bg-yellow-50';
+    label = 'Thừa cân'; color = 'text-[#B7791F]'; bg = 'bg-[#FFFFF0]';
   } else if (z >= -2) {
-    label = 'Bình thường'; color = 'text-emerald-600'; bg = 'bg-emerald-50';
+    label = 'Bình thường'; color = 'text-[#2D6A4F]'; bg = 'bg-[#D8F3DC]';
   } else if (z >= -3) {
-    label = 'Gầy'; color = 'text-blue-600'; bg = 'bg-blue-50';
+    label = 'Gầy'; color = 'text-[#2B6CB0]'; bg = 'bg-[#EBF8FF]';
   } else {
-    label = 'Rất gầy'; color = 'text-purple-600'; bg = 'bg-purple-50';
+    label = 'Rất gầy'; color = 'text-[#6B46C1]'; bg = 'bg-[#FAF5FF]';
   }
 
   if (ageInMonths < 60 && z > 1) {
@@ -100,10 +100,10 @@ export function calculateValueFromZScore(z, l, m, s) {
 }
 
 export function evaluateHCZScore(z) {
-  if (z < -3) return { label: 'Vòng đầu rất nhỏ', color: 'text-red-600', bg: 'bg-red-50' };
-  if (z < -2) return { label: 'Vòng đầu nhỏ', color: 'text-orange-600', bg: 'bg-orange-50' };
-  if (z <= 2) return { label: 'Bình thường', color: 'text-emerald-600', bg: 'bg-emerald-50' };
-  return { label: 'Vòng đầu lớn', color: 'text-blue-600', bg: 'bg-blue-50' };
+  if (z < -3) return { label: 'Vòng đầu rất nhỏ', color: 'text-[#9B2C2C]', bg: 'bg-[#FFF5F5]' };
+  if (z < -2) return { label: 'Vòng đầu nhỏ', color: 'text-[#E53E3E]', bg: 'bg-[#FFF5F5]' };
+  if (z <= 2) return { label: 'Bình thường', color: 'text-[#2D6A4F]', bg: 'bg-[#D8F3DC]' };
+  return { label: 'Vòng đầu lớn', color: 'text-[#2B6CB0]', bg: 'bg-[#EBF8FF]' };
 }
 
 export const boysHCL = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
