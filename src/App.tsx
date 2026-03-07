@@ -35,6 +35,8 @@ const getAverageGrowthVelocity = (ageInMonths: number, gender: 'boy' | 'girl') =
 
 export default function App() {
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isUpdated, setIsUpdated] = useState(false);
   const [username, setUsername] = useState('');
   const [passcode, setPasscode] = useState('');
   const [unlockError, setUnlockError] = useState('');
@@ -304,6 +306,15 @@ export default function App() {
     }
   };
 
+  const handleUpdateClick = () => {
+    setIsUpdating(true);
+    setIsUpdated(false);
+    setTimeout(() => {
+      setIsUpdating(false);
+      setIsUpdated(true);
+    }, 1500);
+  };
+
   return (
     <>
       {!isUnlocked && (
@@ -337,6 +348,24 @@ export default function App() {
                 className="w-full bg-indigo-600 text-white font-medium py-3 rounded-xl hover:bg-indigo-700 transition-colors"
               >
                 Truy cập ứng dụng
+              </button>
+              <button
+                onClick={handleUpdateClick}
+                disabled={isUpdating}
+                className={`w-full text-white font-medium py-3 rounded-xl transition-colors flex items-center justify-center gap-2 ${
+                  isUpdated ? 'bg-green-600 hover:bg-green-700' : 'bg-[#FF0000] hover:bg-[#CC0000]'
+                }`}
+              >
+                {isUpdating ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Đang kiểm tra...
+                  </>
+                ) : isUpdated ? (
+                  'Đã cập nhật version mới'
+                ) : (
+                  'Cập nhật Version mới'
+                )}
               </button>
               <p className="text-center text-sm text-slate-500 mt-4">
                 Liên hệ BS.Sơn để đăng kí sử dụng
@@ -787,7 +816,7 @@ export default function App() {
                       </div>
                     </div>
                     <div className="text-xs text-indigo-700 bg-indigo-50 p-2.5 rounded-lg border border-indigo-100">
-                      Ở lứa tuổi này, tốc độ tăng chiều cao trung bình {getAverageGrowthVelocity(ageInMonths, gender)}/năm (PMID: 26132126)
+                      Tốc độ tăng trưởng cần được bác sĩ đánh giá riêng cho từng ca
                     </div>
                   </div>
                 )}
