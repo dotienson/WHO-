@@ -351,13 +351,13 @@ export default function App() {
         {/* Header */}
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold tracking-tight text-[#000080]" style={{ fontFamily: 'Helvetica, Arial, sans-serif' }}>
-            EndoScreen 2.1 Beta
+            EndoScreen 2.2
           </h1>
           <p className="text-slate-600 max-w-xl mx-auto font-medium">
             Trợ lí thông minh cho phòng khám Nội tiết - Dinh dưỡng - Tăng trưởng Trẻ em
           </p>
           <p className="text-slate-400 text-sm max-w-xl mx-auto">
-            Bản quyền thuộc về BS. Đỗ Tiến Sơn - dotienson.com/app
+            Bản quyền thuộc về BS. Đỗ Tiến Sơn - <a href="https://dotienson.com/app" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:underline">dotienson.com/app</a>
           </p>
         </div>
 
@@ -816,6 +816,7 @@ export default function App() {
                   zScore={results.bmiZ}
                   percentile={zScoreToPercentile(results.bmiZ)}
                   evaluation={evaluateBMIZScore(results.bmiZ, ageInMonths)}
+                  note={ageInMonths < 24 ? "Nên sử dụng chỉ số cân nặng theo chiều cao (W/L)." : undefined}
                 />
 
                 {/* BSA Result */}
@@ -916,9 +917,8 @@ export default function App() {
 
         {/* Footer */}
         <div className="pt-8 pb-4 text-center mt-4">
-          <p className="text-sm text-slate-500 font-medium leading-relaxed">
-            Một sản phẩm sáng tạo của ThS.BS. Đỗ Tiến Sơn<br />
-            Sản phẩm đang thử nghiệm nội bộ; các kết quả mang tính tham khảo, không trực tiếp quyết định chẩn đoán và tư vấn lâm sàng
+          <p className="text-xs text-slate-500 leading-relaxed">
+            Ứng dụng đang thử nghiệm nội bộ.
           </p>
           <p className="text-xs text-slate-400 mt-4">
             Thông báo lỗi, góp ý: <a href="mailto:bs.dotienson@gmail.com" className="text-indigo-500 hover:underline">bs.dotienson@gmail.com</a>
@@ -965,12 +965,13 @@ function PercentileVisualizer({ percentile, gender }: { percentile: number, gend
   );
 }
 
-function ResultCard({ title, value, zScore, percentile, evaluation }: { 
+function ResultCard({ title, value, zScore, percentile, evaluation, note }: { 
   title: string; 
   value: string; 
   zScore: number; 
   percentile?: number;
-  evaluation: { label: string, color: string, bg: string, note?: string } 
+  evaluation: { label: string, color: string, bg: string, note?: string };
+  note?: string;
 }) {
   return (
     <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 transition-all hover:shadow-md">
@@ -1025,6 +1026,11 @@ function ResultCard({ title, value, zScore, percentile, evaluation }: {
       {evaluation.note && (
         <div className="mt-3 text-xs text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-100">
           {evaluation.note}
+        </div>
+      )}
+      {note && (
+        <div className="mt-3 text-xs text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-100">
+          {note}
         </div>
       )}
     </div>
