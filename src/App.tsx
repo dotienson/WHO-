@@ -283,18 +283,18 @@ export default function App() {
   const isWarning = hasExtremeZ || hasClinicalSign;
 
   useEffect(() => {
-    if (passcode === '8386') {
+    if (username.toLowerCase().includes('ta') && passcode.endsWith('8888')) {
       setIsUnlocked(true);
       setUnlockError('');
     }
-  }, [passcode]);
+  }, [username, passcode]);
 
   const handleUnlock = () => {
-    if (passcode === '8386') {
+    if (username.toLowerCase().includes('ta') && passcode.endsWith('8888')) {
       setIsUnlocked(true);
       setUnlockError('');
     } else {
-      setUnlockError('Mã truy cập không đúng');
+      setUnlockError('Thông tin đăng nhập không đúng');
     }
   };
 
@@ -374,9 +374,12 @@ export default function App() {
         
         {/* Header */}
         <div className="text-center pt-4 pb-2">
-          <h1 className="text-3xl font-bold tracking-tight text-[#000080]" style={{ fontFamily: 'Helvetica, Arial, sans-serif' }}>
+          <h1 className="text-4xl font-normal tracking-tight text-[#000080] mb-2" style={{ fontFamily: 'Helvetica, Arial, sans-serif' }}>
             EndoScreen 2.2 - Dr.Sơn
           </h1>
+          <p className="text-[#000080] text-lg font-medium">
+            Dựa trên tham chiếu WHO
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
