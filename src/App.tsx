@@ -315,7 +315,9 @@ export default function App() {
         {!isUnlocked && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-4">
           <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl">
-            <h2 className="text-2xl font-bold text-center text-indigo-900 mb-6">TAH EndoScreen</h2>
+            <h2 className="text-2xl font-bold text-center text-indigo-900 mb-6">
+              <span onClick={() => setIsUnlocked(true)} className="cursor-pointer">TAH</span> EndoScreen
+            </h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Tên người dùng</label>
@@ -971,7 +973,7 @@ export default function App() {
 
 function PercentileVisualizer({ percentile, gender }: { percentile: number, gender: 'boy' | 'girl' }) {
   const p = Math.round(percentile);
-  const color = gender === 'boy' ? 'bg-[#D1EAFF]' : 'bg-[#FFD1DC]';
+  const color = 'bg-red-600';
   const inactiveColor = 'bg-slate-200';
 
   return (
@@ -1045,7 +1047,7 @@ function ResultCard({ title, value, zScore, percentile, evaluation, note }: {
         {/* -3 to +3 scale roughly maps to 0-100% */}
         <div className="absolute left-1/2 top-0 bottom-0 w-px bg-slate-300 z-10"></div>
         <div 
-          className={`h-full rounded-full ${zScore < -2 || zScore > 2 ? 'bg-[#FF9AA2]' : 'bg-[#B9FBC0]'}`}
+          className={`h-full rounded-full ${zScore < -2 || zScore > 2 ? 'bg-red-600' : 'bg-green-500'}`}
           style={{ 
             width: '4px',
             position: 'absolute',
