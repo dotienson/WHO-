@@ -517,9 +517,19 @@ export default function App() {
                       {dateError}
                     </div>
                   ) : (
-                    <div className="bg-indigo-50 text-indigo-700 text-sm py-2 px-3 rounded-lg flex justify-between items-center border border-indigo-100">
-                      <span>Tuổi tính được:</span>
-                      <span className="font-semibold">{years} tuổi {months} tháng</span>
+                    <div className="space-y-3">
+                      <div className="bg-indigo-50 text-indigo-700 text-sm py-2 px-3 rounded-lg flex justify-between items-center border border-indigo-100">
+                        <span>Tuổi tính được:</span>
+                        <span className="font-semibold">{years} tuổi {months} tháng</span>
+                      </div>
+                      <a 
+                        href="https://intergrowth21.ndog.ox.ac.uk/en/ManualEntry" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="w-full bg-[#FF9A8B] hover:bg-[#FF8A7B] text-white font-medium py-2.5 px-4 rounded-xl transition-colors flex items-center justify-center text-sm shadow-sm"
+                      >
+                        INTERGROWTH-21
+                      </a>
                     </div>
                   )}
                 </div>
